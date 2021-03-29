@@ -16,13 +16,13 @@ namespace NativeAndroidWithMaui
 	/// </summary>
 	public static class EssentialsExtensions
 	{
-		public static IAppHostBuilder UseEssentials(this IAppHostBuilder builder, Application application) =>
-			builder.UseEssentials(() => Platform.Init(application));
+		public static IAppHostBuilder ConfigureEssentials(this IAppHostBuilder builder, Application application, Action<HostBuilderContext, IEssentialsBuilder> configureDelegate = null) =>
+			builder.ConfigureEssentials(() => Platform.Init(application), configureDelegate);
 
-		public static IAppHostBuilder UseEssentials(this IAppHostBuilder builder, Activity activity, Bundle bundle) =>
-			builder.UseEssentials(() => Platform.Init(activity, bundle));
+		public static IAppHostBuilder ConfigureEssentials(this IAppHostBuilder builder, Activity activity, Bundle bundle, Action<HostBuilderContext, IEssentialsBuilder> configureDelegate = null) =>
+			builder.ConfigureEssentials(() => Platform.Init(activity, bundle), configureDelegate);
 
-		private static IAppHostBuilder UseEssentials(this IAppHostBuilder builder, Action initDelegate)
+		public static IAppHostBuilder ConfigureEssentials(this IAppHostBuilder builder, Action initDelegate, Action<HostBuilderContext, IEssentialsBuilder> configureDelegate = null)
 		{
 			builder.ConfigureLifecycleEvents((ctx, life) =>
 			{
@@ -43,12 +43,9 @@ namespace NativeAndroidWithMaui
 					}));
 			});
 
-			return builder;
-		}
+			if (configureDelegate != null)
+				builder.ConfigureServices<EssentialsBuilder>(configureDelegate);
 
-		public static IAppHostBuilder ConfigureEssentials(this IAppHostBuilder builder, Action<HostBuilderContext, IEssentialsBuilder> configureDelegate)
-		{
-			builder.ConfigureServices<EssentialsBuilder>(configureDelegate);
 			return builder;
 		}
 

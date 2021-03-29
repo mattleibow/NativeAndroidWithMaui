@@ -33,11 +33,13 @@ namespace NativeAndroidWithMaui
 			// In most cases, the builder can be done once in the Application, and
 			// then just accessed by all the activities.
 			var host = new AppHostBuilder()
-				.ConfigureEssentials((_, essentials) => essentials
+				// You can either just use the defaults and not add anything
+				//.ConfigureEssentials(this, savedInstanceState)
+				// Or you can opt into features and change settings
+				.ConfigureEssentials(this, savedInstanceState, (_, essentials) => essentials
 					.AddAppAction("action", "Action Title")
 					.TrackVersion()
 					.OnAppAction(action => Console.WriteLine($"App action was triggered: {action.Title} ({action.Id})")))
-				.UseEssentials(this, savedInstanceState)
 				.ConfigureServices((_, services) => services
 					.AddSingleton<ISnackbarMessageService, SnackbarMessageService>())
 				.Build();
